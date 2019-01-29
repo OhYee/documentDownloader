@@ -1,12 +1,15 @@
 # 文档下载器
+
 可用于下载[book118](https://max.book118.com/)的PDF文档
 
 ## 思路
+
 1. 爬虫爬取图片链接
 2. 下载图片
 3. 将图片拼合成pdf文件
 
 ## 使用方法
+
 1. 安装Python3
 2. 安装`reportlab`  
   `python -m pip install reportlab`
@@ -15,3 +18,12 @@
 
 **仅供学习爬虫及相关知识，请支持正版图书**  
 *虽然book118上的好多pdf也是盗版吧*
+
+## 贡献列表
+
+- [OhYee](https://github.com/OhYee)
+- [JodeZer](https://github.com/JodeZer)
+
+## 更新
+
+- 2019-01-29: Book118网站更新,更改对应部分代码. [@JodeZer](https://github.com/JodeZer)

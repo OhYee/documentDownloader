@@ -4,10 +4,12 @@ import os
 import shutil
 from spider import getHTML, makeURL
 from pdf import makePDF
+import ssl
 
 
 class book118:
     def __init__(self, pid):
+        ssl._create_default_https_context = ssl._create_unverified_context
         self.pid = str(pid)
         self.pdfInfo = {}
         self.domain = ''
