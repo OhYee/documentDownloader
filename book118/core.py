@@ -21,10 +21,12 @@ class book118:
         self.__getPdfInfo()
         print(self.pdfInfo)
         #　获得所有图片的地址
+        img = self.pdfInfo.get('Img')
+        imgUrl = img if img != None else ""
         while self.index != self.total:
             self.__getNextPage(
                 self.imgList[-1]
-                if len(self.imgList) != 0 else self.pdfInfo['Img']
+                if len(self.imgList) != 0 else imgUrl
             )
         # 下载图片
         self.__getIMG()
@@ -49,7 +51,7 @@ class book118:
             self.pdfInfo[lst[0]] = lst[1]
 
     def __getNextPage(self, imgUrl):
-        url = makeURL('https://' + self.domain + '.book118.com/pdf/GetNextPage/?', {
+        url = makeURL('https://' + self.domain + '.book118.com/PW/GetPage/?', {
             'f': self.pdfInfo['Url'],
             'img': imgUrl,
             'isMobile': 'false',
