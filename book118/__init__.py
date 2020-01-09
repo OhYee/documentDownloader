@@ -1,6 +1,4 @@
-from book118.core import book118
-
-
-def getPDF(pid):
-    pdf = book118(pid)
-    pdf.getPDF()
+from .book118 import *
+from .pdf import *
+from .request import *
+from .thread import *
