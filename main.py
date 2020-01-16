@@ -35,7 +35,7 @@ def solve_argv(argv):
                 document_id = int(arg)
             except:
                 document_id = int(re.findall(
-                    r"https://max.book118.com/html/2019/0215/(\d+).shtm", arg)[0])
+                    r"https://max.book118.com/html/\d+/\d+/(\d+).shtm", arg)[0])
         elif opt in ("-o", "--output"):
             output_file = arg
         elif opt in ("-p", "--proxy"):
