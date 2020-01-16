@@ -128,5 +128,10 @@ def document_download(document_id: int or str,  force_redownload: bool,
         thread.start()
     for thread in threads:
         thread.join()
+    del threads
+
+    print("Downloading images finished. Generate PDF file ", output_file)
 
     build_pdf(temp_dir, img_list, output_file)
+
+    print("Generating PDF file finished. File name ", output_file)
