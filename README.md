@@ -1,5 +1,7 @@
 # 文档下载器
 
+[![Sync to Gitee](https://github.com/OhYee/documentDownloader/workflows/Sync%20to%20Gitee/badge.svg)](https://gitee.com/OhYee/documentDownloader) [![version](https://img.shields.io/github/v/tag/OhYee/documentDownloader)](https://github.com/OhYee/documentDownloader/tags) [![pypi version](https://img.shields.io/pypi/v/documentDownloader)](https://pypi.org/project/documentDownloader/) [![License](https://img.shields.io/github/license/OhYee/documentDownloader)](./LICENSE)
+
 可用于下载[book118](https://max.book118.com/)的PDF文档
 
 ## 思路
@@ -8,24 +10,33 @@
 2. 下载图片
 3. 将图片拼合成pdf文件
 
-## 使用方法
+## 参数说明
+
+|参数             |解释                                                                                                |必备参数|
+|:----------------|:--------------------------------------------------------------------------------------------------|:------|
+|`-h`、`--help`   |显示帮助                                                                                            |❌     |
+|`-i`、`--id`     |要下载的文件id（或网页地址）                                                                           |✔      |
+|`-o`、`--output` |文件保存名，默认是`book118.pdf`                                                                       |❌     |
+|`-p`、`--proxy`  |设置要使用的代理地址（默认使用环境变量中`HTTP_PROXY`和`HTTPS_PROXY`设置的值），可以使用`-p ''`强制设置不走代理 |❌     |
+|`-f`、`--force`  |强制重新下载，不使用缓存                                                                               |❌     |
+|`-t`、`--thread` |要使用的线程数                                                                                        |❌    |
+
+## 使用已上传到 PyPI 的包
+```bash
+python3 -m pip install documentDownloader
+```
+
+安装完成后即可直接使用 `documentDownloader` 命令
+
+如：`documentDownloader -i https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019.pdf' -p http://127.0.0.1:1080 -f -t 20`
+
+## 直接使用源码中的 main.py 
 
 1. 安装Python3
 2. 安装依赖模块(Pillow、reportlab、requests) `python -m pip install -r requirements.txt`
-3. 使用相应命令下载内容
+3. 使用 `python3 main.py` 执行
 
-```
-python main.py -i <document id>
-    -h --help       show help
-    -i --id         document id (required)
-    -o --output     output file (default `book118.pdf`)
-    -p --proxy      proxy url (default using `http_proxy` and `https_proxy`)
-    -f --force      force re-download images
-    -t --thread     thread number for downloading images
-```
-
-完整命令：`python main.py -i https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019.pdf' -p http://127.0.0.1:1080 -f -t 20`
-其中，文档id可以直接使用id本身(`5301014320002213`)，也可以使用页面链接(`https://max.book118.com/html/2020/0109/5301014320002213.shtm`)
+如：`python main.py -i https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019.pdf' -p http://127.0.0.1:1080 -f -t 20`
 
 **仅供学习爬虫及相关知识，请支持正版图书**  
 *虽然book118上的好多pdf也是盗版吧*
