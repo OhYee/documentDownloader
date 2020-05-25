@@ -55,3 +55,4 @@ python3 -m pip install documentDownloader
 
 - 2019-01-29: Book118网站更新,更改对应部分代码. [@JodeZer](https://github.com/JodeZer)
 - 2020-01-09: 重构代码，增加多线程下载加速，允许使用代理，允许通过已有缓存直接建立pdf，自动识别图片大小生成pdf [@OhYee](https://github.com/OhYee)
+- 2020-05-25: 发布到 PyPI
