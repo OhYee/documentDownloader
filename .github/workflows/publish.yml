@@ -4,7 +4,7 @@ on:
     branches:
       - master
     tags:
-      - '*'
+      - 'v*'
 jobs:
   sync:
     name: Publish to PyPI
