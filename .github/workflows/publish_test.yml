@@ -1,13 +1,11 @@
-name: Publish to PyPI
+name: Publish to TestPyPI
 on: 
   push:
     branchs:
       - master
-    tags:
-      - '*'
 jobs:
   sync:
-    name: Publish to PyPI
+    name: Publish to TestPyPI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -16,8 +14,9 @@ jobs:
           python-version: '3.8' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
       - run: python setup.py sdist
-      - name: Publish distribution 📦 to PyPI
-        if: startsWith(github.event.ref, 'refs/tags')
+      - name: Publish package to TestPyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
-          password: ${{ secrets.pypi_password }}
+          user: __token__
+          password: ${{ secrets.test_pypi_password }}
+          repository_url: https://test.pypi.org/legacy/
