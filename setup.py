@@ -5,8 +5,11 @@ from setuptools import setup
 import setuptools
 import os
 
+versions = list(filter(lambda x: x != "", os.popen(
+    "git tag -l").read().split("\n")))
+version = versions[-1] if len(versions) > 0 else "UNTAGED-%s" % os.popen(
+    "git log --pretty=format:'%H'").read().split("\n")[0]
 
-version = os.popen("git tag -l").read().split("\n")[-2]
 with open("README.md", "r") as fh:
     long_description = fh.read()
 with open("requirements.txt", "r") as fh:
