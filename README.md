@@ -1,6 +1,7 @@
 # 文档下载器
 
-[![Sync to Gitee](https://github.com/OhYee/documentDownloader/workflows/Sync%20to%20Gitee/badge.svg)](https://gitee.com/OhYee/documentDownloader) [![version](https://img.shields.io/github/v/tag/OhYee/documentDownloader)](https://github.com/OhYee/documentDownloader/tags) [![pypi version](https://img.shields.io/pypi/v/documentDownloader)](https://pypi.org/project/documentDownloader/) [![License](https://img.shields.io/github/license/OhYee/documentDownloader)](./LICENSE)
+[![Sync to Gitee](https://github.com/OhYee/documentDownloader/workflows/Sync%20to%20Gitee/badge.svg)](https://gitee.com/OhYee/documentDownloader) [![Publish to PyPI](https://github.com/OhYee/documentDownloader/workflows/Publish%20to%20PyPI/badge.svg)](https://pypi.org/project/documentDownloader/) [![Publish to TestPyPI](https://github.com/OhYee/documentDownloader/workflows/Publish%20to%20TestPyPI/badge.svg)](https://test.pypi.org/project/documentDownloader/) [![Release](https://github.com/OhYee/documentDownloader/workflows/Release/badge.svg)](https://github.com/OhYee/documentDownloader/releases)   
+[![version](https://img.shields.io/github/v/tag/OhYee/documentDownloader)](https://github.com/OhYee/documentDownloader/tags) [![pypi version](https://img.shields.io/pypi/v/documentDownloader)](https://pypi.org/project/documentDownloader/) [![License](https://img.shields.io/github/license/OhYee/documentDownloader)](./LICENSE)  
 
 可用于下载[book118](https://max.book118.com/)的PDF文档
 
@@ -21,7 +22,9 @@
 |`-f`、`--force`  |强制重新下载，不使用缓存                                                                               |❌     |
 |`-t`、`--thread` |要使用的线程数                                                                                        |❌    |
 
-## 使用已上传到 PyPI 的包
+## 使用模块
+
+### 使用已上传到 PyPI 的包
 ```bash
 python3 -m pip install documentDownloader
 ```
@@ -30,7 +33,9 @@ python3 -m pip install documentDownloader
 
 如：`documentDownloader -i https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019.pdf' -p http://127.0.0.1:1080 -f -t 20`
 
-## 直接使用源码中的 main.py 
+### 直接使用源码中的 main.py 
+
+克隆该项目，或在[releases](https://github.com/OhYee/documentDownloader/releases)页面选择版本下载
 
 1. 安装Python3
 2. 安装依赖模块(Pillow、reportlab、requests) `python -m pip install -r requirements.txt`
