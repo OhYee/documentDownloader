@@ -1,0 +1,17 @@
+name: Sync to Gitee
+on: 
+  push:
+    branchs:
+      - master
+jobs:
+  sync:
+    name: Sync to Gitee
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync to Gitee
+        uses: wearerequired/git-mirror-action@master
+        env:
+            SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        with:
+            source-repo: "git@github.com:OhYee/documentDownloader.git"
+            destination-repo: "git@gitee.com:OhYee/documentDownloader.git"
