@@ -1,7 +1,7 @@
 name: Publish to TestPyPI
 on: 
   push:
-    branchs:
+    branches:
       - master
 jobs:
   sync:
