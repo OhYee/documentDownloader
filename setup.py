@@ -6,7 +6,7 @@ import setuptools
 import os
 
 
-version = os.popen("git tag -l").read().split("\n")[0]
+version = os.popen("git tag -l").read().split("\n")[-2]
 with open("README.md", "r") as fh:
     long_description = fh.read()
 with open("requirements.txt", "r") as fh:
