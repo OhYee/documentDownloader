@@ -16,11 +16,12 @@
 |参数             |解释                                                                                                |必备参数|
 |:----------------|:--------------------------------------------------------------------------------------------------|:------|
 |`-h`、`--help`   |显示帮助                                                                                            |❌     |
-|`-i`、`--id`     |要下载的文件id（或网页地址）                                                                           |✔      |
-|`-o`、`--output` |文件保存名，默认是`book118.pdf`                                                                       |❌     |
+|`-u`、`--url`    |要下载的文件的网页地址                                                                           |✔      |
+|`-o`、`--output` |文件保存名，默认是文档的标题.pdf                                                                       |❌     |
 |`-p`、`--proxy`  |设置要使用的代理地址（默认使用环境变量中`HTTP_PROXY`和`HTTPS_PROXY`设置的值），可以使用`-p ''`强制设置不走代理 |❌     |
 |`-f`、`--force`  |强制重新下载，不使用缓存                                                                               |❌     |
-|`-t`、`--thread` |要使用的线程数                                                                                        |❌    |
+|`-t`、`--thread` |要使用的线程数，如不指定默认是10                                                                                        |❌    |
+|`-s`、`--safe`   |如果被服务器拒绝可以打开此选项，将强制单线程，并增加请求和下载的间隔时间                                                                                        |❌    |
 
 ## 使用模块
 
@@ -31,7 +32,7 @@ python3 -m pip install documentDownloader
 
 安装完成后即可直接使用 `documentDownloader` 命令
 
-如：`documentDownloader -i https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019.pdf' -p http://127.0.0.1:1080 -f -t 20`
+如：`documentDownloader -u https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019' -p http://127.0.0.1:1080 -f -t 20`
 
 ### 直接使用源码中的 main.py 
 
@@ -41,7 +42,7 @@ python3 -m pip install documentDownloader
 2. 安装依赖模块(Pillow、reportlab、requests) `python -m pip install -r requirements.txt`
 3. 使用 `python3 main.py` 执行
 
-如：`python main.py -i https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019.pdf' -p http://127.0.0.1:1080 -f -t 20`
+如：`python main.py -u https://max.book118.com/html/2020/0109/5301014320002213.shtm -o '单身人群专题研究报告-2019' -p http://127.0.0.1:1080 -f -t 20`
 
 **仅供学习爬虫及相关知识，请支持正版图书**  
 *虽然book118上的好多pdf也是盗版吧*
@@ -56,3 +57,4 @@ python3 -m pip install documentDownloader
 - 2019-01-29: Book118网站更新,更改对应部分代码. [@JodeZer](https://github.com/JodeZer)
 - 2020-01-09: 重构代码，增加多线程下载加速，允许使用代理，允许通过已有缓存直接建立pdf，自动识别图片大小生成pdf [@OhYee](https://github.com/OhYee)
 - 2020-05-25: 发布到 PyPI
+- 2021-10-18: Book118网站更新，更改部分代码； 设置默认导出pdf的文件名为文档标题； 对无法免费预览全文的文档增加提示； 调整请求间隔为2秒(实测请求间隔小于2秒很可能会返回空地址)； 增加"慢速下载"选项，防止下载过快被服务器拒绝。[@alxt17](https://github.com/alxt17)

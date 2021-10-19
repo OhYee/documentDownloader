@@ -7,25 +7,27 @@ import getopt
 
 
 def solve_argv(argv):
-    help_text = '''python main.py -i <document id>
+    help_text = '''python main.py -u <document url>
     -h --help       show help
-    -i --id         document id (required)
+    -u --url         document url (required)
     -o --output     output file (default `book118.pdf`)
     -p --proxy      proxy url (default using `http_proxy` and `https_proxy`)
     -f --force      force re-download images
     -t --thread     thread number for downloading images
+    -s --safe       limit download request in case server refuses
 '''
 
-    document_id = None
+    document_url = None
     http_proxy = os.environ.get("HTTP_PROXY")
     https_proxy = os.environ.get("HTTPS_PROXY")
     force_redownload = False
-    output_file = "./book118.pdf"
+    output_file = None
     thread_number = 10
+    safe_download = False
 
     try:
         opts, args = getopt.getopt(
-            argv, "hi:o:p:ft:", ["help", "id=", "proxy=", "output=", "force", "thread="])
+            argv, "hu:o:p:ft:s", ["help", "url=", "proxy=", "output=", "force", "thread=", "safe"])
     except getopt.GetoptError:
         print(help_text)
         sys.exit(1)
@@ -34,12 +36,8 @@ def solve_argv(argv):
         if opt in ('-h', "--help"):
             print(help_text)
             exit(0)
-        elif opt in ("-i", "--id"):
-            try:
-                document_id = int(arg)
-            except:
-                document_id = int(re.findall(
-                    r"https://max.book118.com/html/\d+/\d+/(\d+).shtm", arg)[0])
+        elif opt in ("-u", "--url"):
+            document_url = arg
         elif opt in ("-o", "--output"):
             output_file = arg
         elif opt in ("-p", "--proxy"):
@@ -51,17 +49,20 @@ def solve_argv(argv):
                 thread_number = int(arg)
             except:
                 pass
-    if document_id == None:
+        elif opt in ("-s", "--safe"):
+            safe_download = True
+    if document_url == None:
         print(help_text)
         exit(1)
-    return (document_id, http_proxy, https_proxy,
-            force_redownload, output_file, thread_number)
+    return (document_url, http_proxy, https_proxy,
+            force_redownload, output_file, thread_number, safe_download)
 
 
 def main():
-    (document_id, http_proxy, https_proxy,
-     force_redownload, output_file, thread_number) = solve_argv(sys.argv[1:])
+    (document_url, http_proxy, https_proxy,
+     force_redownload, output_file, thread_number, safe_download) = solve_argv(sys.argv[1:])
     set_proxy(http_proxy, https_proxy)
-
-    document_download(document_id, force_redownload,
-                      output_file, thread_number)
+    if safe_download:
+        thread_number = 1
+    document_download(document_url, force_redownload,
+                      output_file, thread_number, safe_download)

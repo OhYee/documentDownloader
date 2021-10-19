@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 import re
@@ -5,98 +6,105 @@ import threading
 from .thread import Thread
 from .pdf import build_pdf
 from .request import get_page
+import time
 
 
-def get_preview_page_url(document_id: int or str) -> str:
+def get_next_pages(info: dict, page: int):
     '''
-    获取Book118预览页地址
+    根据当前图片获取下六张图片地址
     '''
-    return get_page("https://max.book118.com/index.php",  {
-        "g": "Home",
-        "m": "View",
-        "a": "ViewUrl",
-        "cid": document_id,
-        "flag": 1,
-    }).text
-
-
-def get_next_page(info: object, img: str):
-    '''
-    根据当前图片获取下一张图片地址
-    '''
-    result = get_page('https://' + info["domain"] + '.book118.com/PW/GetPage/?', {
-        'f': info['Url'],
-        'img': img,
-        'isMobile': 'false',
-        'isNet': 'True',
-        'readLimit': info['ReadLimit'],
-        'furl': info['Furl']
-    }).json()
+    result_text = get_page("https://openapi.book118.com/getPreview.html?", {
+        "project_id": 1,
+        "aid": info["aid"],
+        "view_token": info["view_token"],
+        "page": str(page),
+        "callback": "jQuery",  # 这个参数其实可有可无，名字也无所谓
+        "_": int(round(time.time() * 1000))  # 时间戳
+    }).text[7:-2]  # 截掉"jQuery("和末尾的");"，得到包含预览图片地址的json
+    result = json.loads(result_text)
     return result
 
 
-def get_page_info(document_id: int or str) -> object:
+def get_page_info(document_url: str) -> dict:
     '''
     获取文档信息
     '''
-    preview_url = get_preview_page_url(document_id)
-    preview_page = get_page("https:" + preview_url).text
+    preview_webpage = get_page(document_url).text
 
-    info = {
-        "domain": re.findall(r'//(.*?)\..*', preview_url)[0]
-    }
-    forms = re.findall(
-        r'<input type="hidden" id="(.*?)" value="(.*?)".*?/>', preview_page)
-    for form in forms:
-        info[form[0]] = form[1]
+    info = {"aid": re.findall(r'\d+', re.findall(r'office: {.*\n.*aid: \d+', preview_webpage)[0]),
+            # 获得office: {之后的aid，为解密后的id
+            "view_token": re.findall(r' view_token: \'.+\'', preview_webpage)[0][14:-1],
+            "title": re.findall(r' title: \'.+\'', preview_webpage)[0][9:-1],
+            "preview_page": re.findall(r' preview_page: \d+', preview_webpage)[0][15:],  # 可预览的页数
+            "actual_page": re.findall(r' actual_page: \d+', preview_webpage)[0][14:]  # 实际文章页数
+            }
+    if info["preview_page"] != info["actual_page"]:
+        print(
+            "attention! only {} of {} page(s) are free to preview(download)\n".format(info["preview_page"],
+                                                                                      info["actual_page"]))
     return info
 
 
-def get_image_list(document_id: int or str, info: object) -> list:
+def get_image_url_list(info: dict, safe_download: bool) -> list:
     '''
     获取文档预览图片地址列表
     '''
-    img_list = []
-    while 1:
-        json_data = get_next_page(info, ""if len(
-            img_list) == 0 else img_list[-1])
-        print("Get image url {}/{} {}".format(
-            json_data["PageIndex"], json_data["PageCount"], json_data["NextPage"]
-        ))
-        img_list.append(json_data["NextPage"])
-        if json_data["PageCount"] <= json_data["PageIndex"]:
-            break
-    return img_list
+    current_page = 1
+    retry = 5
+    img_url_list = []
+    while current_page <= int(info["preview_page"]):
+        json_data = get_next_pages(info, current_page)
+        for value in json_data["data"].values():
+            if value == '':
+                if retry == 0:
+                    print("Cannot get correct response, too many fails.")
+                    sys.exit(1)
+                print("Empty response, retrying {}. Consider using -s(--safe) to limit request frequency".format(retry))
+                time.sleep(1)
+                retry -= 1
+                break
+            print("Getting image url {}/{}".format(current_page, info["preview_page"]))
+            img_url_list.append("https:" + value)
+            current_page += 1
+            retry = 5
+        if safe_download:
+            time.sleep(3)
+        else:
+            time.sleep(2)
+    return img_url_list
 
 
-def document_download(document_id: int or str,  force_redownload: bool,
-                      output_file: str, thread_number: int):
-    domain = ""
-    img_list = []
+def document_download(document_url: str, force_redownload: bool,
+                      output_file: str, thread_number: int, safe_download: bool):
+    document_id = int(re.findall(
+        r"https://max.book118.com/html/\d+/\d+/(\d+).shtm", document_url)[0])
     temp_dir = "./temp/{}".format(document_id)
     temp_file = "{}/{}".format(temp_dir, "img_list")
 
     if force_redownload or not os.path.exists(temp_file):
-        info = get_page_info(document_id)
-        domain = info["domain"]
-        img_list = get_image_list(document_id, info)
+        info = get_page_info(document_url)
+        if output_file is None:
+            output_file = info["title"]
+        img_url_list = get_image_url_list(info, safe_download)
+
         if not os.path.exists("./temp/"):
             os.mkdir("./temp/")
         if not os.path.exists(temp_dir):
             os.mkdir(temp_dir)
         with open(temp_file, 'w') as f:
-            f.write(info["domain"]+"\n")
-            [f.write(img+"\n") for img in img_list]
+            f.write(info["title"] + "\n")
+            [f.write(img_url + "\n") for img_url in img_url_list]
     else:
         with open(temp_file, 'r') as f:
-            img_list = f.read().split("\n")
-            domain = img_list[0]
-            img_list = img_list[1:]
-            img_list = list(filter(lambda x: len(x) > 0, img_list))
+            img_url_list = f.read().split("\n")
+            if output_file is None:
+                output_file = img_url_list[0]
+            img_url_list = img_url_list[1:]
+            img_url_list = list(filter(lambda x: len(x) > 0, img_url_list))
 
-    download_list = img_list if force_redownload else list(filter(
-        lambda x: not os.path.exists("{}/{}.jpg".format(temp_dir, x)),
-        img_list
+    download_list = img_url_list if force_redownload else list(filter(
+        lambda x: not os.path.exists("{}/{}".format(temp_dir, x[x.rfind('/') + 1:])),
+        img_url_list
     ))
 
     print(download_list)
@@ -116,11 +124,12 @@ def document_download(document_id: int or str,  force_redownload: bool,
         lock.release()
         return img
 
-    def download_image(thread_id: int, img: str):
-        with open("{}/{}.jpg".format(temp_dir, img), "wb") as f:
-            print("Thread", thread_id, "download image", img)
-            f.write(get_page('http://' + domain +
-                             '.book118.com/img/?', {'img': img}).content)
+    def download_image(thread_id: int, img_url: str):
+        with open("{}/{}".format(temp_dir, img_url[img_url.rfind('/') + 1:]), "wb") as f:
+            print("Thread", thread_id, "download image", img_url)
+            f.write(get_page(img_url).content)
+        if safe_download:
+            time.sleep(1)
 
     threads = [Thread(i, download_image, task_pool)
                for i in range(thread_number)]
@@ -130,8 +139,8 @@ def document_download(document_id: int or str,  force_redownload: bool,
         thread.join()
     del threads
 
-    print("Downloading images finished. Generate PDF file ", output_file)
+    print("Downloading images finished. Generate PDF file ", output_file + '.pdf')
 
-    build_pdf(temp_dir, img_list, output_file)
+    build_pdf(temp_dir, img_url_list, output_file)
 
-    print("Generating PDF file finished. File name ", output_file)
+    print("Generating PDF file finished. File name ", output_file + '.pdf')
