@@ -51,6 +51,7 @@ python3 -m pip install documentDownloader
 
 - [OhYee](https://github.com/OhYee)
 - [JodeZer](https://github.com/JodeZer)
+- [alxt17](https://github.com/alxt17)
 
 ## 更新
 
