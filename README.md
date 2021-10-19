@@ -11,6 +11,8 @@
 2. 下载图片
 3. 将图片拼合成pdf文件
 
+相关文章 [使用爬虫免费下载book118的PDF文件](https://www.ohyee.cc/post/note_book118_spider)
+
 ## 参数说明
 
 |参数             |解释                                                                                                |必备参数|
